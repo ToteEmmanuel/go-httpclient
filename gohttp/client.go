@@ -2,43 +2,42 @@ package gohttp
 
 import (
 	"net/http"
+	"sync"
+
+	"github.com/ToteEmmanuel/go-httpclient/core"
 )
 
 type httpClient struct {
-	Headers http.Header
+	builder        *clientBuilder
+	client         *http.Client
+	clientCreation sync.Once
 }
 
 //HTTPClient to be used as main entrypoint of project.
 type HTTPClient interface {
-	Get(string, http.Header) (*http.Response, error)
-	Post(string, http.Header, interface{}) (*http.Response, error)
-	Put(string, http.Header, interface{}) (*http.Response, error)
-	Patch(string, http.Header, interface{}) (*http.Response, error)
-	Delete(string, http.Header) (*http.Response, error)
-	SetHeaders(http.Header)
+	Get(string, ...http.Header) (*core.Response, error)
+	Post(string, interface{}, ...http.Header) (*core.Response, error)
+	Put(string, interface{}, ...http.Header) (*core.Response, error)
+	Patch(string, interface{}, ...http.Header) (*core.Response, error)
+	Delete(string, ...http.Header) (*core.Response, error)
+	Options(string, ...http.Header) (*core.Response, error)
 }
 
-func (hc *httpClient) Get(url string, headers http.Header) (*http.Response, error) {
-	return hc.do(http.MethodGet, url, headers, nil)
+func (hc *httpClient) Get(url string, headers ...http.Header) (*core.Response, error) {
+	return hc.do(http.MethodGet, url, nil, headers)
 }
-func (hc *httpClient) Post(url string, headers http.Header, body interface{}) (*http.Response, error) {
-	return hc.do(http.MethodPost, url, headers, body)
+func (hc *httpClient) Post(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
+	return hc.do(http.MethodPost, url, body, headers)
 }
-func (hc *httpClient) Put(url string, headers http.Header, body interface{}) (*http.Response, error) {
-	return hc.do(http.MethodPut, url, headers, body)
+func (hc *httpClient) Put(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
+	return hc.do(http.MethodPut, url, body, headers)
 }
-func (hc *httpClient) Patch(url string, headers http.Header, body interface{}) (*http.Response, error) {
-	return hc.do(http.MethodPatch, url, headers, body)
+func (hc *httpClient) Patch(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
+	return hc.do(http.MethodPatch, url, body, headers)
 }
-func (hc *httpClient) Delete(url string, headers http.Header) (*http.Response, error) {
-	return hc.do(http.MethodDelete, url, headers, nil)
+func (hc *httpClient) Delete(url string, headers ...http.Header) (*core.Response, error) {
+	return hc.do(http.MethodDelete, url, nil, headers)
 }
-func (hc *httpClient) SetHeaders(headers http.Header) {
-	hc.Headers = headers
-}
-
-//New returns an instance of an HTTPClient Object.
-func New() HTTPClient {
-	client := &httpClient{}
-	return client
+func (hc *httpClient) Options(url string, headers ...http.Header) (*core.Response, error) {
+	return hc.do(http.MethodOptions, url, nil, headers)
 }
