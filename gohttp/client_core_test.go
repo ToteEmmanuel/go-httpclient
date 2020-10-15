@@ -135,5 +135,3 @@ func TestGetHTTPClient(t *testing.T) {
 		assert.NotEqual(t, 10*time.Second, client.(*httpClient).getHTTPClient().(*http.Client).Timeout, `Timeout should be the one set.`)
 	})
 }
-
-func TestMockDoFunction() {}
